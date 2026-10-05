@@ -26,25 +26,27 @@ END;
 
 -- Atualizar Status do Veículo
 -- Para: Alugado  
-CREATE TRIGGER atualizar_status_veiculo_alug
+CREATE TRIGGER Status_Veiculo_EmLocacao
 AFTER INSERT ON ALUGUEL
 BEGIN
   UPDATE VEICULO
-  SET Status = 'Alugado'
+  SET status_veiculo = 'Locação'
   WHERE ID_Veiculo = NEW.ID_Veiculo;
 END;
+
+
 -- Para: Disponivel  
-CREATE TRIGGER atualizar_status_veiculo_disp
+CREATE TRIGGER Status_Veiculo_FimLocacao
 AFTER UPDATE OF Data_Devolucao_Real ON ALUGUEL
 WHEN NEW.Data_Devolucao_Real IS NOT NULL
 BEGIN
   UPDATE VEICULO
-  SET Status = 'Disponivel'
+  SET status_veiculo = 'Disponivel'
   WHERE ID_Veiculo = NEW.ID_Veiculo;
 END;
 -- Para: Manutenção - Cadeia de Atualização
 -- Inicio Manutenção
-CREATE TRIGGER inicio_manutencao
+CREATE TRIGGER Entrada_manutencao
 AFTER INSERT ON MANUTENCAO
 FOR EACH ROW
 BEGIN
@@ -58,8 +60,8 @@ BEGIN
   AND Data_Devolucao_Real IS NULL;
 END;
 -- Fim manutenção
-CREATE TRIGGER fim_manutencao
-AFTER UPDATE OF Data_Fim ON MANUTENCAO
+CREATE TRIGGER saida_manutencao
+AFTER UPDATE OF data_saida_manutencao ON MANUTENCAO
 FOR EACH ROW
 WHEN NEW.Data_Fim IS NOT NULL
 BEGIN
@@ -67,7 +69,6 @@ BEGIN
   SET Status = 'Disponivel'
   WHERE ID_Veiculo = NEW.ID_Veiculo;
 END;
-
   
 -- Calcular Valor Final Aluguel
 CREATE TRIGGER calc_valor_alug
